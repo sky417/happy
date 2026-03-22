@@ -172,7 +172,7 @@ export async function runCopilot(opts: {
   let currentPermissionMode: PermissionMode | undefined = undefined;
   let currentModel: string | undefined = undefined;
   // Track current copilot permission mode for handler creation
-  let copilotPermMode: CopilotPermissionMode = 'suggest';
+  let copilotPermMode: CopilotPermissionMode = 'auto-edit';
 
   session.onUserMessage((message) => {
     // Resolve permission mode (validate)

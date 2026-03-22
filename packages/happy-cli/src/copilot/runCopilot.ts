@@ -38,6 +38,10 @@ import type { CopilotMode, CopilotPermissionMode } from '@/copilot/types';
 import type { PermissionMode } from '@/api/types';
 import { COPILOT_MODEL_ENV, DEFAULT_COPILOT_MODEL, CHANGE_TITLE_INSTRUCTION } from '@/copilot/constants';
 
+// Use 'opencode' as ACP provider until production app adds 'copilot' support
+// TODO: Change to 'copilot' once the app is deployed with the new provider enum
+const ACP_PROVIDER = 'opencode' as const;
+
 /**
  * Map Happy's PermissionMode to Copilot's CopilotPermissionMode.
  */
@@ -283,7 +287,7 @@ export async function runCopilot(opts: {
   async function handleAbort() {
     logger.debug('[Copilot] Abort requested - stopping current task');
 
-    session.sendAgentMessage('copilot', {
+    session.sendAgentMessage(ACP_PROVIDER, {
       type: 'turn_aborted',
       id: randomUUID(),
     });
@@ -442,7 +446,7 @@ export async function runCopilot(opts: {
           }
           accumulatedResponse += msg.textDelta;
           // Stream text to mobile app immediately
-          session.sendAgentMessage('copilot', {
+          session.sendAgentMessage(ACP_PROVIDER, {
             type: 'message',
             message: msg.textDelta,
           });
@@ -458,7 +462,7 @@ export async function runCopilot(opts: {
         if (msg.status === 'error') {
           logger.debug(`[copilot] ⚠️ Error status received: ${statusDetail || 'Unknown error'}`);
 
-          session.sendAgentMessage('copilot', {
+          session.sendAgentMessage(ACP_PROVIDER, {
             type: 'turn_aborted',
             id: randomUUID(),
           });
@@ -469,7 +473,7 @@ export async function runCopilot(opts: {
           session.keepAlive(thinking, 'remote');
 
           if (!taskStartedSent) {
-            session.sendAgentMessage('copilot', {
+            session.sendAgentMessage(ACP_PROVIDER, {
               type: 'task_started',
               id: randomUUID(),
             });
@@ -502,7 +506,7 @@ export async function runCopilot(opts: {
           }
 
           messageBuffer.addMessage(`Error: ${errorMessage}`, 'status');
-          session.sendAgentMessage('copilot', {
+          session.sendAgentMessage(ACP_PROVIDER, {
             type: 'message',
             message: `Error: ${errorMessage}`,
           });
@@ -515,7 +519,7 @@ export async function runCopilot(opts: {
         const toolArgs = msg.args ? JSON.stringify(msg.args).substring(0, 100) : '';
         logger.debug(`[copilot] 🔧 Tool call received: ${msg.toolName} (${msg.callId})`);
         messageBuffer.addMessage(`Executing: ${msg.toolName}${toolArgs ? ` ${toolArgs}${toolArgs.length >= 100 ? '...' : ''}` : ''}`, 'tool');
-        session.sendAgentMessage('copilot', {
+        session.sendAgentMessage(ACP_PROVIDER, {
           type: 'tool-call',
           name: msg.toolName,
           callId: msg.callId,
@@ -547,7 +551,7 @@ export async function runCopilot(opts: {
           messageBuffer.addMessage(`Result: ${resultText}`, 'result');
         }
 
-        session.sendAgentMessage('copilot', {
+        session.sendAgentMessage(ACP_PROVIDER, {
           type: 'tool-result',
           callId: msg.callId,
           output: msg.result,
@@ -558,7 +562,7 @@ export async function runCopilot(opts: {
 
       case 'fs-edit':
         messageBuffer.addMessage(`File edit: ${msg.description}`, 'tool');
-        session.sendAgentMessage('copilot', {
+        session.sendAgentMessage(ACP_PROVIDER, {
           type: 'file-edit',
           description: msg.description,
           diff: msg.diff,
@@ -569,7 +573,7 @@ export async function runCopilot(opts: {
 
       case 'terminal-output':
         messageBuffer.addMessage(msg.data, 'result');
-        session.sendAgentMessage('copilot', {
+        session.sendAgentMessage(ACP_PROVIDER, {
           type: 'terminal-output',
           data: msg.data,
           callId: (msg as any).callId || randomUUID(),
@@ -578,7 +582,7 @@ export async function runCopilot(opts: {
 
       case 'permission-request': {
         const payload = (msg as any).payload || {};
-        session.sendAgentMessage('copilot', {
+        session.sendAgentMessage(ACP_PROVIDER, {
           type: 'permission-request',
           permissionId: msg.id,
           toolName: payload.toolName || (msg as any).reason || 'unknown',
@@ -594,7 +598,7 @@ export async function runCopilot(opts: {
         logger.debug(`[copilot] Exec approval request received: ${eaCallId}`);
         messageBuffer.addMessage(`Exec approval requested: ${eaCallId}`, 'tool');
         const { call_id: _cid, type: _t, ...inputs } = execApprovalMsg;
-        session.sendAgentMessage('copilot', {
+        session.sendAgentMessage(ACP_PROVIDER, {
           type: 'tool-call',
           name: 'CopilotBash',
           callId: eaCallId,
@@ -612,7 +616,7 @@ export async function runCopilot(opts: {
         const filesMsg = changeCount === 1 ? '1 file' : `${changeCount} files`;
         messageBuffer.addMessage(`Modifying ${filesMsg}...`, 'tool');
         logger.debug(`[copilot] Patch apply begin: ${patchCallId}, files: ${changeCount}`);
-        session.sendAgentMessage('copilot', {
+        session.sendAgentMessage(ACP_PROVIDER, {
           type: 'tool-call',
           name: 'CopilotPatch',
           callId: patchCallId,
@@ -636,7 +640,7 @@ export async function runCopilot(opts: {
           messageBuffer.addMessage(`Error: ${errorMsg.substring(0, 200)}`, 'result');
         }
         logger.debug(`[copilot] Patch apply end: ${peCallId}, success: ${patchEndMsg.success}`);
-        session.sendAgentMessage('copilot', {
+        session.sendAgentMessage(ACP_PROVIDER, {
           type: 'tool-result',
           callId: peCallId,
           output: {
@@ -662,7 +666,7 @@ export async function runCopilot(opts: {
               messageBuffer.updateLastMessage(`[Thinking] ${thinkingPreview}...`, 'system');
             }
           }
-          session.sendAgentMessage('copilot', {
+          session.sendAgentMessage(ACP_PROVIDER, {
             type: 'thinking',
             text: thinkingText,
           });
@@ -671,7 +675,7 @@ export async function runCopilot(opts: {
 
       default:
         if ((msg as any).type === 'token-count') {
-          session.sendAgentMessage('copilot', {
+          session.sendAgentMessage(ACP_PROVIDER, {
             type: 'token_count',
             ...(msg as any),
             id: randomUUID(),
@@ -896,7 +900,7 @@ export async function runCopilot(opts: {
           }
 
           messageBuffer.addMessage(errorMsg, 'status');
-          session.sendAgentMessage('copilot', {
+          session.sendAgentMessage(ACP_PROVIDER, {
             type: 'message',
             message: errorMsg,
           });
@@ -910,13 +914,13 @@ export async function runCopilot(opts: {
             message: accumulatedResponse,
             id: randomUUID(),
           };
-          session.sendAgentMessage('copilot', messagePayload);
+          session.sendAgentMessage(ACP_PROVIDER, messagePayload);
           accumulatedResponse = '';
           isResponseInProgress = false;
         }
 
         // Send task_complete ONCE at the end of turn
-        session.sendAgentMessage('copilot', {
+        session.sendAgentMessage(ACP_PROVIDER, {
           type: 'task_complete',
           id: randomUUID(),
         });
@@ -979,3 +983,4 @@ export async function runCopilot(opts: {
     logger.debug('[copilot]: Final cleanup completed');
   }
 }
+

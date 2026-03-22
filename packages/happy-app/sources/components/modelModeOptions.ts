@@ -103,7 +103,10 @@ export function getCopilotPermissionModes(): PermissionMode[] {
 
 export function getCopilotModelModes(): ModelMode[] {
     return [
-        { key: 'default', name: 'Default', description: 'Copilot discovers models at runtime' },
+        { key: 'default', name: 'Default', description: 'Use Copilot default model' },
+        { key: 'gpt-5.4', name: 'GPT-5.4', description: 'OpenAI GPT-5.4' },
+        { key: 'claude-sonnet-4.6', name: 'Claude Sonnet 4.6', description: 'Anthropic Claude Sonnet 4.6' },
+        { key: 'claude-opus-4.6', name: 'Claude Opus 4.6', description: 'Anthropic Claude Opus 4.6' },
     ];
 }
 

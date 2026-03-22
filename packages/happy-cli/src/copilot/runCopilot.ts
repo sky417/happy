@@ -383,6 +383,11 @@ export async function runCopilot(opts: {
           logger.debug('[copilot]: Exiting agent via Ctrl-C');
           shouldExit = true;
           await handleAbort();
+          // Force exit after 5 seconds if cleanup hangs
+          setTimeout(() => {
+            logger.debug('[copilot]: Force exit after timeout');
+            process.exit(0);
+          }, 5000).unref();
         }
       });
     };

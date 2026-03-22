@@ -441,6 +441,11 @@ export async function runCopilot(opts: {
             messageBuffer.updateLastMessage(msg.textDelta, 'assistant');
           }
           accumulatedResponse += msg.textDelta;
+          // Stream text to mobile app immediately
+          session.sendAgentMessage('copilot', {
+            type: 'message',
+            message: msg.textDelta,
+          });
         }
         break;
 

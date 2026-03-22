@@ -26,7 +26,7 @@ import open from 'open';
 //
 // The resulting Client ID (e.g., "Iv23li...") replaces the placeholder below.
 // This should be done by whoever operates the Happy server, not individual contributors.
-const GITHUB_CLIENT_ID = 'Iv1.XXXXXXXXXXXXXXXX';
+const GITHUB_CLIENT_ID = 'Ov23liZbpmFU0k3uzxRP';
 const DEVICE_CODE_URL = 'https://github.com/login/device/code';
 const TOKEN_URL = 'https://github.com/login/oauth/access_token';
 const SCOPES = 'copilot read:user';

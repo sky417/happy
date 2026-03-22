@@ -45,6 +45,10 @@ const ACP_PROVIDER = 'copilot' as const;
 
 /**
  * Map Happy's PermissionMode to Copilot's CopilotPermissionMode.
+ *
+ * TODO: Once the production app is deployed with Copilot-native permission modes
+ * (suggest, auto-edit, yolo), this mapping becomes unnecessary. The app will send
+ * CopilotPermissionMode values directly. Remove this function and use the mode as-is.
  */
 function mapToCopilotPermission(mode: PermissionMode): CopilotPermissionMode {
   switch (mode) {

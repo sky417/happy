@@ -5,7 +5,7 @@
  * agent through Happy CLI. It manages the agent lifecycle, session state, and
  * communication with the Happy server and mobile app.
  *
- * Modeled on the Gemini entry point (runGemini.ts).
+ * Modeled on the Gemini entry point (runGemini.ts), reuses GeminiDisplay with agentName='Copilot'.
  */
 
 import { render } from 'ink';
@@ -367,6 +367,7 @@ export async function runCopilot(opts: {
         messageBuffer,
         logPath: process.env.DEBUG ? logger.getLogPath() : undefined,
         currentModel: currentModelValue,
+        agentName: 'Copilot',
         onExit: async () => {
           logger.debug('[copilot]: Exiting agent via Ctrl-C');
           shouldExit = true;

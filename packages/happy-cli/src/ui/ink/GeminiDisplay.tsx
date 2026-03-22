@@ -13,10 +13,12 @@ interface GeminiDisplayProps {
   messageBuffer: MessageBuffer;
   logPath?: string;
   currentModel?: string;
+  agentName?: string;
   onExit?: () => void;
 }
 
-export const GeminiDisplay: React.FC<GeminiDisplayProps> = ({ messageBuffer, logPath, currentModel, onExit }) => {
+export const GeminiDisplay: React.FC<GeminiDisplayProps> = ({ messageBuffer, logPath, currentModel, agentName, onExit }) => {
+  const displayName = agentName || 'Gemini';
   const [messages, setMessages] = useState<BufferedMessage[]>([]);
   const [confirmationMode, setConfirmationMode] = useState<boolean>(false);
   const [actionInProgress, setActionInProgress] = useState<boolean>(false);
@@ -148,7 +150,7 @@ export const GeminiDisplay: React.FC<GeminiDisplayProps> = ({ messageBuffer, log
         overflow="hidden"
       >
         <Box flexDirection="column" marginBottom={1}>
-          <Text color="cyan" bold>✨ Gemini Agent Messages</Text>
+          <Text color="cyan" bold>✨ {displayName} Agent Messages</Text>
           <Text color="gray" dimColor>{'─'.repeat(Math.min(terminalWidth - 4, 60))}</Text>
         </Box>
 
@@ -212,7 +214,7 @@ export const GeminiDisplay: React.FC<GeminiDisplayProps> = ({ messageBuffer, log
           ) : (
             <>
               <Text color="cyan" bold>
-                ✨ Gemini Agent Running • Ctrl-C to exit
+                ✨ {displayName} Agent Running • Ctrl-C to exit
               </Text>
               {model && (
                 <Text color="gray" dimColor>

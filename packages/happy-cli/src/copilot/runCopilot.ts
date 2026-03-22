@@ -51,10 +51,10 @@ function mapToCopilotPermission(mode: PermissionMode): CopilotPermissionMode {
     case 'yolo':
     case 'bypassPermissions': return 'yolo';
     case 'safe-yolo':
-    case 'acceptEdits':
-    case 'default': return 'auto-edit';
-    case 'read-only': return 'suggest';
-    default: return 'auto-edit';
+    case 'acceptEdits': return 'auto-edit';
+    case 'read-only':
+    case 'default': return 'suggest';
+    default: return 'suggest';
   }
 }
 
@@ -179,7 +179,7 @@ export async function runCopilot(opts: {
   let currentPermissionMode: PermissionMode | undefined = undefined;
   let currentModel: string | undefined = undefined;
   // Track current copilot permission mode for handler creation
-  let copilotPermMode: CopilotPermissionMode = 'auto-edit';
+  let copilotPermMode: CopilotPermissionMode = 'suggest';
 
   session.onUserMessage((message) => {
     // Resolve permission mode (validate)

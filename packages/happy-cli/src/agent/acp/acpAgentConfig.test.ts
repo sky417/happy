@@ -6,7 +6,7 @@ describe('KNOWN_ACP_AGENTS', () => {
     expect(KNOWN_ACP_AGENTS).toEqual({
       gemini: { command: 'gemini', args: ['--experimental-acp'] },
       opencode: { command: 'opencode', args: ['acp'] },
-      copilot: { command: 'copilot', args: ['acp', '--stdio'] },
+      copilot: { command: 'copilot', args: ['--acp'] },
     });
   });
 });
@@ -24,7 +24,7 @@ describe('resolveAcpAgentConfig', () => {
     const result = resolveAcpAgentConfig(['copilot']);
     expect(result.agentName).toBe('copilot');
     expect(result.command).toBe('copilot');
-    expect(result.args).toEqual(['acp', '--stdio']);
+    expect(result.args).toEqual(['--acp']);
   });
 
   it('appends extra CLI args for known agent aliases', () => {

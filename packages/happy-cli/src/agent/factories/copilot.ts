@@ -88,7 +88,12 @@ export function createCopilotBackend(options: CopilotBackendOptions): CopilotBac
   }
 
   const copilotCommand = 'copilot';
-  const copilotArgs = ['acp', '--stdio'];
+  const copilotArgs = ['--acp'];
+
+  // Pass model as CLI flag if explicitly set (not 'default')
+  if (model !== DEFAULT_COPILOT_MODEL) {
+    copilotArgs.push('--model', model);
+  }
 
   const backendOptions: AcpBackendOptions = {
     agentName: 'copilot',
@@ -98,7 +103,6 @@ export function createCopilotBackend(options: CopilotBackendOptions): CopilotBac
     env: {
       ...options.env,
       ...(githubToken ? { [GITHUB_TOKEN_ENV]: githubToken } : {}),
-      ...(model !== DEFAULT_COPILOT_MODEL ? { [COPILOT_MODEL_ENV]: model } : {}),
     },
     mcpServers: options.mcpServers,
     permissionHandler: options.permissionHandler,

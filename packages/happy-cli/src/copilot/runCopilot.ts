@@ -38,9 +38,10 @@ import type { CopilotMode, CopilotPermissionMode } from '@/copilot/types';
 import type { PermissionMode } from '@/api/types';
 import { COPILOT_MODEL_ENV, DEFAULT_COPILOT_MODEL, CHANGE_TITLE_INSTRUCTION } from '@/copilot/constants';
 
-// Use 'opencode' as ACP provider until production app adds 'copilot' support
-// TODO: Change to 'copilot' once the app is deployed with the new provider enum
-const ACP_PROVIDER = 'opencode' as const;
+// ACP provider identifier for session messages
+// Use 'copilot' when the app has been deployed with the new provider enum
+// Use 'opencode' as fallback for production app compatibility
+const ACP_PROVIDER = 'copilot' as const;
 
 /**
  * Map Happy's PermissionMode to Copilot's CopilotPermissionMode.

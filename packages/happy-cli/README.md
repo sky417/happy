@@ -56,6 +56,7 @@ happy connect gemini
 - `happy` – Start Claude Code session (default)
 - `happy gemini` – Start Gemini CLI session
 - `happy codex` – Start Codex mode
+- `happy copilot` – Start Copilot CLI session
 - `happy acp` – Start a generic ACP-compatible agent
 
 ### Utility Commands

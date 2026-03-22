@@ -13,7 +13,7 @@ export type ModelMode = ModeOption;
 export type PermissionModeKey = string;
 export type ModelModeKey = string;
 
-export type AgentFlavor = 'claude' | 'codex' | 'gemini' | string | null | undefined;
+export type AgentFlavor = 'claude' | 'codex' | 'gemini' | 'copilot' | string | null | undefined;
 
 type Translate = (key: any) => string;
 
@@ -93,12 +93,29 @@ export function getGeminiModelModes(): ModelMode[] {
     return GEMINI_MODEL_FALLBACKS;
 }
 
+export function getCopilotPermissionModes(): PermissionMode[] {
+    return [
+        { key: 'suggest', name: 'Suggest', description: null },
+        { key: 'auto-edit', name: 'Auto Edit', description: null },
+        { key: 'yolo', name: 'YOLO', description: null },
+    ];
+}
+
+export function getCopilotModelModes(): ModelMode[] {
+    return [
+        { key: 'default', name: 'Default', description: 'Copilot discovers models at runtime' },
+    ];
+}
+
 export function getHardcodedPermissionModes(flavor: AgentFlavor, translate: Translate): PermissionMode[] {
     if (flavor === 'codex') {
         return getCodexPermissionModes(translate);
     }
     if (flavor === 'gemini') {
         return getGeminiPermissionModes(translate);
+    }
+    if (flavor === 'copilot') {
+        return getCopilotPermissionModes();
     }
     return getClaudePermissionModes(translate);
 }
@@ -109,6 +126,9 @@ export function getHardcodedModelModes(flavor: AgentFlavor, translate: Translate
     }
     if (flavor === 'gemini') {
         return getGeminiModelModes();
+    }
+    if (flavor === 'copilot') {
+        return getCopilotModelModes();
     }
     return getClaudeModelModes();
 }
@@ -130,7 +150,7 @@ export function getAvailablePermissionModes(
     metadata: Metadata | null | undefined,
     translate: Translate,
 ): PermissionMode[] {
-    if (flavor === 'claude' || flavor === 'codex') {
+    if (flavor === 'claude' || flavor === 'codex' || flavor === 'copilot') {
         return hackModes(getHardcodedPermissionModes(flavor, translate));
     }
 
@@ -168,6 +188,9 @@ export function getDefaultModelKey(flavor: AgentFlavor): string {
     }
     if (flavor === 'gemini') {
         return 'gemini-2.5-pro';
+    }
+    if (flavor === 'copilot') {
+        return 'default';
     }
     return 'default';
 }

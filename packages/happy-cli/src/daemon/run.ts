@@ -36,7 +36,7 @@ export const initialMachineMetadata: MachineMetadata = {
 // Get environment variables for a profile, filtered for agent compatibility
 async function getProfileEnvironmentVariablesForAgent(
   profileId: string,
-  agentType: 'claude' | 'codex' | 'gemini'
+  agentType: 'claude' | 'codex' | 'gemini' | 'copilot'
 ): Promise<Record<string, string>> {
   try {
     const settings = await readSettings();
@@ -285,6 +285,8 @@ export async function startDaemon(): Promise<void> {
 
             // Set the environment variable for Codex
             authEnv.CODEX_HOME = codexHomeDir.name;
+          } else if (options.agent === 'copilot') {
+            authEnv.GITHUB_TOKEN = options.token;
           } else { // Assuming claude
             authEnv.CLAUDE_CODE_OAUTH_TOKEN = options.token;
           }
@@ -335,7 +337,7 @@ export async function startDaemon(): Promise<void> {
 
         // Fail-fast validation: Check that any auth variables present are fully expanded
         // Only validate variables that are actually set (different agents need different auth)
-        const potentialAuthVars = ['ANTHROPIC_AUTH_TOKEN', 'CLAUDE_CODE_OAUTH_TOKEN', 'OPENAI_API_KEY', 'CODEX_HOME', 'AZURE_OPENAI_API_KEY', 'TOGETHER_API_KEY'];
+        const potentialAuthVars = ['ANTHROPIC_AUTH_TOKEN', 'CLAUDE_CODE_OAUTH_TOKEN', 'OPENAI_API_KEY', 'CODEX_HOME', 'AZURE_OPENAI_API_KEY', 'TOGETHER_API_KEY', 'GITHUB_TOKEN'];
         const unexpandedAuthVars = potentialAuthVars.filter(varName => {
           const value = extraEnv[varName];
           // Only fail if variable IS SET and contains unexpanded ${VAR} references
@@ -387,7 +389,7 @@ export async function startDaemon(): Promise<void> {
           // Construct command for the CLI
           const cliPath = join(projectPath(), 'dist', 'index.mjs');
           // Determine agent command - support claude, codex, and gemini
-          const agent = options.agent === 'gemini' ? 'gemini' : (options.agent === 'codex' ? 'codex' : 'claude');
+          const agent = options.agent === 'copilot' ? 'copilot' : options.agent === 'gemini' ? 'gemini' : (options.agent === 'codex' ? 'codex' : 'claude');
           const fullCommand = `node --no-warnings --no-deprecation ${cliPath} ${agent} --happy-starting-mode remote --started-by daemon`;
 
           // Spawn in tmux with environment variables
@@ -482,6 +484,9 @@ export async function startDaemon(): Promise<void> {
               break;
             case 'gemini':
               agentCommand = 'gemini';
+              break;
+            case 'copilot':
+              agentCommand = 'copilot';
               break;
             default:
               return {

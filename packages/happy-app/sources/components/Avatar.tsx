@@ -22,6 +22,8 @@ const flavorIcons = {
     claude: require('@/assets/images/icon-claude.png'),
     codex: require('@/assets/images/icon-gpt.png'),
     gemini: require('@/assets/images/icon-gemini.png'),
+    // TODO: Add icon-copilot.png asset and replace fallback
+    copilot: require('@/assets/images/icon-gpt.png'),
 };
 
 const styles = StyleSheet.create((theme) => ({

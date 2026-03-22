@@ -15,6 +15,14 @@ export {
   type GeminiBackendResult,
 } from './gemini';
 
+// Copilot factory
+export {
+  createCopilotBackend,
+  registerCopilotAgent,
+  type CopilotBackendOptions,
+  type CopilotBackendResult,
+} from './copilot';
+
 // Future factories:
 // export { createCodexBackend, registerCodexAgent, type CodexBackendOptions } from './codex';
 // export { createClaudeBackend, registerClaudeAgent, type ClaudeBackendOptions } from './claude';

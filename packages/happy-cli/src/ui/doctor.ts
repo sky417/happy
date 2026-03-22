@@ -6,6 +6,7 @@
  */
 
 import chalk from 'chalk'
+import { execSync } from 'node:child_process'
 import { configuration } from '@/configuration'
 import { readSettings, readCredentials } from '@/persistence'
 import { checkIfDaemonRunningAndCleanupStaleState } from '@/daemon/controlClient'
@@ -99,6 +100,28 @@ export async function runDoctorCommand(filter?: 'all' | 'daemon'): Promise<void>
         console.log(`CLI Entrypoint: ${chalk.blue(cliEntrypoint)}`);
         console.log(`Wrapper Exists: ${existsSync(wrapperPath) ? chalk.green('✓ Yes') : chalk.red('❌ No')}`);
         console.log(`CLI Exists: ${existsSync(cliEntrypoint) ? chalk.green('✓ Yes') : chalk.red('❌ No')}`);
+        console.log('');
+
+        // Copilot CLI detection
+        console.log(chalk.bold('🤖 Copilot CLI'));
+        try {
+            const copilotVersion = execSync('copilot --version', { encoding: 'utf-8', timeout: 5000 }).trim();
+            console.log(`Copilot CLI: ${chalk.green('✓ Found')}`);
+            console.log(`Version: ${chalk.green(copilotVersion)}`);
+        } catch {
+            console.log(`Copilot CLI: ${chalk.red('❌ Not found')}`);
+        }
+        try {
+            const ghAuthOutput = execSync('gh auth status', { encoding: 'utf-8', timeout: 5000, stdio: ['pipe', 'pipe', 'pipe'] }).trim();
+            console.log(`GitHub Auth: ${chalk.green('✓ Configured')}`);
+        } catch (error) {
+            const stderr = (error as any)?.stderr?.toString() || '';
+            if (stderr.includes('Logged in')) {
+                console.log(`GitHub Auth: ${chalk.green('✓ Configured')}`);
+            } else {
+                console.log(`GitHub Auth: ${chalk.yellow('⚠️  Not configured (run gh auth login)')}`);
+            }
+        }
         console.log('');
 
         // Configuration

@@ -43,11 +43,13 @@ import { COPILOT_MODEL_ENV, DEFAULT_COPILOT_MODEL, CHANGE_TITLE_INSTRUCTION } fr
  */
 function mapToCopilotPermission(mode: PermissionMode): CopilotPermissionMode {
   switch (mode) {
-    case 'yolo': return 'yolo';
-    case 'safe-yolo': return 'auto-edit';
-    case 'read-only':
-    case 'default':
-    default: return 'suggest';
+    case 'yolo':
+    case 'bypassPermissions': return 'yolo';
+    case 'safe-yolo':
+    case 'acceptEdits':
+    case 'default': return 'auto-edit';
+    case 'read-only': return 'suggest';
+    default: return 'auto-edit';
   }
 }
 
